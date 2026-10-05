@@ -35,14 +35,13 @@ async function registerUser(req, res) {
 
         const otp = generateOtp()
         const html = getOtpHtml(otp)
-        console.log(otp)
 
         const otpHash = await bcrypt.hash(otp, 10)
 
         await otpModel.deleteMany({ email })
         await otpModel.create({ email, user: user._id, otpHash })
 
-        // await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+        await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
 
         res.status(201).json({
             message: "Account Created successfully",
@@ -127,14 +126,13 @@ async function resendOtp(req, res) {
         const otp = generateOtp()
         const html = getOtpHtml(otp)
         const otpHash = await bcrypt.hash(otp, 10)
-        console.log(otp)
         await otpModel.create({
             email,
             user: user._id,
             otpHash
         })
 
-        // await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+        await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
 
         res.status(200).json({ message: "OTP sent successfully" })
     } catch (err) {
@@ -159,35 +157,36 @@ async function loginUser(req, res) {
             return res.status(400).json({ message: "Invaild username or password" })
         }
 
-        // if (!user.verified) {
+        if (!user.verified) {
 
-        //     const otp = generateOtp()
-        //     const html = getOtpHtml(otp)
-        //     console.log(otp)
-        //     const otpHash = await bcrypt.hash(otp, 10)
+            const otp = generateOtp()
+            const html = getOtpHtml(otp)
+            console.log(otp)
+            const otpHash = await bcrypt.hash(otp, 10)
 
-        //     await otpModel.deleteMany({ email })
-        //     await otpModel.create({ email, user: user._id, otpHash })
+            await otpModel.deleteMany({ email })
+            await otpModel.create({ email, user: user._id, otpHash })
 
-        //     // await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+            await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
 
-        //     return res.status(403).json({ message: "Please Verify your Email" })
-        // }
+            return res.status(403).json({ message: "Please Verify your Email" })
+        }
 
         const token = jwt.sign({
             id: user._id,
             username: user.username
         }, process.env.JWT_SECRET, {
-            expiresIn: "1d"
+            expiresIn: "7d"
         })
 
         res.cookie("token", token
-            // , {
-        //     httpOnly: true,
-        //     sameSite: "lax",
-        //     secure: false,
-        //     path: "/"}
-         )
+            , {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false,
+                path: "/"
+            }
+        )
 
         res.status(200).json({
             message: "Login Sccessfully",
@@ -224,7 +223,6 @@ async function forgetPassword(req, res) {
 
         const otp = generateOtp()
         const html = getResPasswordOtpHtml(otp)
-        console.log(otp)
         const otpHash = await bcrypt.hash(otp, 10)
 
         await forgetModel.create({
@@ -233,7 +231,7 @@ async function forgetPassword(req, res) {
             otpHash
         })
 
-        // await sendEmail(email, "Forget Password", `Your OTP code is ${otp}`, html)
+        await sendEmail(email, "Forget Password", `Your OTP code is ${otp}`, html)
 
         res.status(200).json({
             message: "OTP Send Successfully",
@@ -317,8 +315,6 @@ async function resetPassword(req, res) {
         await user.save();
 
         await forgetModel.deleteMany({ user: user._id });
-
-
 
         const html = getPasswordChangedHtml()
 
