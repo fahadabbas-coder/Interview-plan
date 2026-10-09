@@ -161,7 +161,6 @@ async function loginUser(req, res) {
 
             const otp = generateOtp()
             const html = getOtpHtml(otp)
-            console.log(otp)
             const otpHash = await bcrypt.hash(otp, 10)
 
             await otpModel.deleteMany({ email })
@@ -183,7 +182,7 @@ async function loginUser(req, res) {
             , {
                 httpOnly: true,
                 sameSite: "lax",
-                secure: false,
+                secure: true,
                 path: "/"
             }
         )
@@ -270,7 +269,7 @@ async function verifyOtp(req, res) {
         res.cookie("resetToken", resetToken, {
             httpOnly: true,
             sameSite: "lax",
-            secure: false,
+            secure: true,
             path: "/api/auth/reset-password"
         })
 
@@ -340,7 +339,7 @@ async function logoutUser(req, res) {
         res.clearCookie("token", {
             httpOnly: true,
             sameSite: "lax",
-            secure: false,
+            secure: true,
             path: "/"
         })
 
