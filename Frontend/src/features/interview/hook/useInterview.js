@@ -73,11 +73,11 @@ export const useInterview = () => {
     }, [setLoading])
 
     useEffect(() => {
-            if (interviewId) {
-                getReportById(interviewId)
-            } else {
-                getReport()
-            }
+        if (interviewId) {
+            getReportById(interviewId)
+        } else {
+            getReport()
+        }
     }, [interviewId, getReportById, getReport])
 
     return { loading, report, getReport, generateReport, getReportById, getResumePdf }
