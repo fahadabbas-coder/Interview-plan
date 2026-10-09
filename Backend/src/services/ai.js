@@ -16,7 +16,6 @@ const interviewReportSchema = z.object({
         question: z.string().describe("The technical question can be ask in the interview"),
         intention: z.string().describe("The intention of interviewer behind asking this question"),
         answer: z.string().describe("how to answer this question, what points to cover, what approach to take etc.")
-
     })).describe("Technical question that can be ask in the interview along with intention how to answer them"),
     behavioralQuestions: z.array(z.object({
         question: z.string().describe("The behavioral question can be ask in the interview"),
@@ -27,16 +26,13 @@ const interviewReportSchema = z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
         severity: z.enum(["low", "medium", "high"]).describe("The severity of the skill gap, i.e."),
     })).describe("The skill gaps that the candidate has along with severity"),
-    preparationPlan: z.object({
-        technical: z.array(z.object({
+    preparationPlan: z.array(z.object({
             day: z.number().describe("The day number of the preparation plan, starting from 1"),
             focus: z.string().describe("The main foucs of this day in the preparation plan, i.e. what to focus on this day"),
             tasks: z.array(z.string()).describe("List of tasks to be done on this day in the preparation plan, i.e. what to do on this day")
         })).describe("A day wise preparation plan for candidate to follow in order to prepare for the interview"),
         title: z.string().describe("The title of the job for which the interview report is generated"),
     })
-
-})
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
@@ -48,7 +44,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
                 content: "You are an expert technical recruiter and interview coach. Analyze the provided Candidate Resume, Self-Description, and Job Description thoroughly. Generate an accurate match score, realistic technical and behavioral interview questions with intentions and answers, pinpoint actual skill gaps based on the job requirements, and create a practical preparation plan."
             }, {
                 role: "user",
-                content: `Generate an interview report for a candidate with the following details: Resume: ${resume} Self - describe: ${selfDescription} Job description: ${jobDescription}`
+                content: `Generate an interview report for a candidate with the following details: Resume: ${resume} Self - desciption: ${selfDescription} Job description: ${jobDescription}`
             }
         ],
         response_format: zodResponseFormat(interviewReportSchema, "interview_report"),

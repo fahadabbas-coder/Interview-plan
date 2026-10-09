@@ -23,7 +23,7 @@ async function generateInterviewReportController(req, res) {
             ...interviewReportByAi
         })
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Interview Report Generated Successfully",
             interviewReport
         })
@@ -66,6 +66,7 @@ async function generateResumePdfController(req, res) {
     try {
         const { interviewReportId } = req.params
         const interviewReport = await interviewReportModel.findById(interviewReportId)
+        
         if (!interviewReport) {
             return res.status(404).json({ message: "Interview Report Not Found" })
         }

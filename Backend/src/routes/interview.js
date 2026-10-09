@@ -1,13 +1,14 @@
 const express = require("express")
 const authMiddleware = require("../middlewares/auth")
 const interviewController = require("../controllers/interview")
-const upload = require("../middlewares/file")
-const rateLimitMiddleware= require("../middlewares/ratelimit")
+const interviewValidatorMiddleware = require("../middlewares/interview.validators")
+const { upload, handleMulterError, checkFileUpload } = require("../middlewares/file")
+const rateLimitMiddleware = require("../middlewares/ratelimit")
 
 const interviewRouter = express.Router()
 
 
-interviewRouter.post("/", authMiddleware.authUser,rateLimitMiddleware.PlanGenerationLimit, upload.single("resume"), interviewController.generateInterviewReportController)
+interviewRouter.post("/", authMiddleware.authUser, upload.single("resume"), handleMulterError, checkFileUpload, interviewValidatorMiddleware.generateInterviewReport, rateLimitMiddleware.PlanGenerationLimit, interviewController.generateInterviewReportController)
 
 interviewRouter.get("/:interviewId", authMiddleware.authUser, interviewController.getInterviewReportByIdController)
 

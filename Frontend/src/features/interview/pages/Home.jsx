@@ -32,9 +32,9 @@ const Home = () => {
                 selfDescription,
                 resumeFile,
             })
-            if (response?.interviewReport?._id) {
-                toastSuccess(response)
-                navigate(`/interview/${response.interviewReport._id}`)
+            if (response?._id) {
+                toastSuccess("Interview plan generated successfully.")
+                navigate(`/interview/${response._id}`)
             } else {
                 toastError(null, "Unable to generate your interview plan.")
             }
@@ -116,6 +116,7 @@ const Home = () => {
                                     className="textarea"
                                     maxLength={5000}
                                     value={jobDescription}
+                                    required
                                     onChange={(event) => setJobDescription(event.target.value)}
                                     placeholder="Paste the full job description here."
                                 />
@@ -176,6 +177,7 @@ const Home = () => {
                                         className="visually-hidden"
                                         type="file"
                                         accept=".pdf"
+                                        required
                                         onChange={(event) => setResumeFile(event.target.files?.[0] ?? null)}
                                     />
                                 </label>
@@ -193,6 +195,7 @@ const Home = () => {
                                     id="selfDescription"
                                     className="textarea textarea--short"
                                     value={selfDescription}
+                                    required
                                     onChange={(event) => setSelfDescription(event.target.value)}
                                     placeholder="Summarize experience, skills, and years in role."
                                 />
