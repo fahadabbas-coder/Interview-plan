@@ -1,4 +1,5 @@
 import { generateInterviewReport, getInterviewReportById, getAllInterviewReports, generateResumePdf } from '../services/interview.api'
+import { useAuth } from "../../auth/hooks/useAuth"
 import { useCallback, useContext, useEffect } from 'react'
 import { InterviewContext } from '../InterviewContext'
 import { useParams } from 'react-router'
@@ -73,12 +74,16 @@ export const useInterview = () => {
     }, [setLoading])
 
     useEffect(() => {
-        if (interviewId) {
-            getReportById(interviewId)
-        } else {
-            getReport()
+        // Only fetch when auth is ready
+        if (!authLoading && user) {
+            if (interviewId) {
+                getReportById(interviewId)
+            } else {
+                getReport()
+            }
         }
-    }, [interviewId, getReportById, getReport])
+
+    }, [interviewId, getReportById, getReport, user, authLoading])
 
     return { loading, report, getReport, generateReport, getReportById, getResumePdf }
 }
