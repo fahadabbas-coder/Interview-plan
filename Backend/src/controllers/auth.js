@@ -178,14 +178,12 @@ async function loginUser(req, res) {
             expiresIn: "7d"
         })
 
-        res.cookie("token", token
-            , {
-                httpOnly: true,
-                sameSite: "lax",
-                secure: true,
-                path: "/"
-            }
-        )
+       res.cookie("token", token, {
+           httpOnly: true,
+           sameSite: "none",
+           secure: true,
+           path: "/"
+       })
 
         res.status(200).json({
             message: "Login Sccessfully",
@@ -266,12 +264,12 @@ async function verifyOtp(req, res) {
             expiresIn: "5m"
         })
 
-        res.cookie("resetToken", resetToken, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: true,
-            path: "/api/auth/reset-password"
-        })
+       res.cookie("resetToken", resetToken, {
+           httpOnly: true,
+           sameSite: "none",
+           secure: true,
+           path: "/api/auth/reset-password"
+       })
 
         res.status(200).json({
             message: "Rest your Password"
@@ -336,12 +334,12 @@ async function logoutUser(req, res) {
             await tokenBlacklistModel.create({ token })
         }
 
-        res.clearCookie("token", {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: true,
-            path: "/"
-        })
+       res.clearCookie("token", {
+           httpOnly: true,
+           sameSite: "none",
+           secure: true,
+           path: "/"
+       })
 
         res.status(200).json({ message: "Logout Successfully" })
     } catch (err) {
