@@ -180,7 +180,7 @@ async function loginUser(req, res) {
 
        res.cookie("token", token, {
            httpOnly: true,
-           sameSite: "none",
+           sameSite: "None",
            secure: true,
            path: "/"
        })
@@ -266,7 +266,7 @@ async function verifyOtp(req, res) {
 
        res.cookie("resetToken", resetToken, {
            httpOnly: true,
-           sameSite: "none",
+           sameSite: "None",
            secure: true,
            path: "/api/auth/reset-password"
        })
@@ -336,7 +336,7 @@ async function logoutUser(req, res) {
 
        res.clearCookie("token", {
            httpOnly: true,
-           sameSite: "none",
+           sameSite: "None",
            secure: true,
            path: "/"
        })
