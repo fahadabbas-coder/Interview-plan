@@ -161,6 +161,12 @@
 
 .btn--loading {
   cursor: progress;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.btn--loading .spinner {
+  flex: 0 0 16px;
 }
 
 .spinner {

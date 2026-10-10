@@ -21,7 +21,7 @@ async function registerUser(req, res) {
 
         if (isUserAlreadyExists) {
             return res.status(400).json({
-                message: "Account already exist with this email or username"
+                message: "Account already exist with this Email or Username"
             })
         }
 
@@ -44,7 +44,7 @@ async function registerUser(req, res) {
         await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
 
         res.status(201).json({
-            message: "Account Created successfully",
+            message: "Account Created. Now Verify Email",
             user: {
                 id: user._id,
                 username: user.username,
