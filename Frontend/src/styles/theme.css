@@ -145,4 +145,8 @@ ul {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .spinner {
+    animation: spin 0.8s linear infinite !important;
+  }
 }
