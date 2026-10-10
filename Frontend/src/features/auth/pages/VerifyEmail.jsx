@@ -40,7 +40,7 @@ const VerifyEmail = () => {
                 toastSuccess(data)
                 setSuccess(true)
                 setTimeout(() => {
-                    navigate("/")
+                    navigate("/login")
                 }, 1500)
             } else {
                 toastError(null, "Invalid OTP. Please try again.")
