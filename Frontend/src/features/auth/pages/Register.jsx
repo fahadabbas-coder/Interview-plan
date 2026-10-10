@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router"
 import { useAuth } from "../hooks/useAuth"
 import Button from "../../../components/ui/Button"
 import Logo from "../../../components/ui/Logo"
-import { toastSuccess, toastError } from "../../../utils/toast"
+import { toastError } from "../../../utils/toast"
 import "../auth.form.css"
 
 const Register = () => {
@@ -21,7 +21,6 @@ const Register = () => {
         try {
             const data = await handleRegister({ username, email, password })
             if (data?.user) {
-                toastSuccess(data)
                 navigate("/verify-email", { state: { email } }) // Pass email to verification page
             } else {
                 toastError(null, "Unable to create your account. Try again.")
