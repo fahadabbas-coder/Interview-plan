@@ -49,6 +49,7 @@ CLIENT_ID=gmail_oauth_client_id
 CLIENT_SECRET=gmail_oauth_client_secret
 REFRESH_TOKEN=gmail_oauth_refresh_token
 EMAIL_USER=gmail_address_that_sends_mail
+REDIS_URL=your_redis_connection_string_here
 ORIGIN_URL=http://localhost:5173
 ```
 
