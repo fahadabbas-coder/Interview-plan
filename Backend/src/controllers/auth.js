@@ -7,6 +7,7 @@ const otpModel = require("../model/otp")
 const forgetModel = require("../model/forget.js")
 const sendEmail = require("../services/email.js")
 const { generateOtp, getOtpHtml, getResPasswordOtpHtml, getPasswordChangedHtml } = require("../utils/utils")
+const emailQueue = require("../queues/email.queue.js")
 
 
 async function registerUser(req, res) {
@@ -41,7 +42,11 @@ async function registerUser(req, res) {
         await otpModel.deleteMany({ email })
         await otpModel.create({ email, user: user._id, otpHash })
 
-        await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+        try {
+            await emailQueue.add("verify-email-otp", { email, otp, html })
+        } catch (queueErr) {
+            console.error("Queue failed:", queueErr.message)
+        }
 
         res.status(201).json({
             message: "Account Created. Now Verify Email",
@@ -132,7 +137,11 @@ async function resendOtp(req, res) {
             otpHash
         })
 
-        await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+        try {
+            await emailQueue.add("resend-email-otp", { email, otp, html })
+        } catch (queueErr) {
+            console.error("Queue failed:", queueErr.message)
+        }
 
         res.status(200).json({ message: "OTP sent successfully" })
     } catch (err) {
@@ -166,7 +175,11 @@ async function loginUser(req, res) {
             await otpModel.deleteMany({ email })
             await otpModel.create({ email, user: user._id, otpHash })
 
-            await sendEmail(email, "OTP Verification", `Your OTP code is ${otp}`, html)
+            try {
+                await emailQueue.add("verify-email-otp", { email, otp, html })
+            } catch (queueErr) {
+                console.error("Queue failed:", queueErr.message)
+            }
 
             return res.status(403).json({ message: "Please Verify your Email" })
         }
@@ -178,13 +191,13 @@ async function loginUser(req, res) {
             expiresIn: "7d"
         })
 
-       res.cookie("token", token, {
-           httpOnly: true,
-           sameSite: "lax",
-           secure: true,
-           maxAge: 7 * 24 * 60 * 60 * 1000,
-           path: "/"
-       })
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: "/"
+        })
 
         res.status(200).json({
             message: "Login Sccessfully",
@@ -228,8 +241,11 @@ async function forgetPassword(req, res) {
             user: user._id,
             otpHash
         })
-
-        await sendEmail(email, "Forget Password", `Your OTP code is ${otp}`, html)
+        try {
+            await emailQueue.add("forget-email-otp", { email, otp, html })
+        } catch (queueErr) {
+            console.error("Queue failed:", queueErr.message)
+        }
 
         res.status(200).json({
             message: "OTP Send Successfully",
@@ -265,12 +281,12 @@ async function verifyOtp(req, res) {
             expiresIn: "5m"
         })
 
-       res.cookie("resetToken", resetToken, {
-           httpOnly: true,
-           sameSite: "lax",
-           secure: true,
-           path: "/api/auth/reset-password"
-       })
+        res.cookie("resetToken", resetToken, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: true,
+            path: "/api/auth/reset-password"
+        })
 
         res.status(200).json({
             message: "Rest your Password"
@@ -315,8 +331,11 @@ async function resetPassword(req, res) {
         await forgetModel.deleteMany({ user: user._id });
 
         const html = getPasswordChangedHtml()
-
-        await sendEmail(user.email, "Password Changed Successfully", "Your Password Changed Successfully", html)
+        try {
+            await emailQueue.add("password-changed-successfully-email", { email: user.email, html })
+        } catch (queueErr) {
+            console.error("Queue failed:", queueErr.message)
+        }
 
         return res.status(200).json({
             message: 'Password Update Successfully'
@@ -335,12 +354,12 @@ async function logoutUser(req, res) {
             await tokenBlacklistModel.create({ token })
         }
 
-       res.clearCookie("token", {
-           httpOnly: true,
-           sameSite: "lax",
-           secure: true,
-           path: "/"
-       })
+        res.clearCookie("token", {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: true,
+            path: "/"
+        })
 
         return res.status(200).json({ message: "Logout Successfully" })
     } catch (err) {
