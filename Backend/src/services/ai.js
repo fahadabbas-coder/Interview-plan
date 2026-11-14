@@ -37,7 +37,7 @@ const interviewReportSchema = z.object({
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
     const completion = await openai.chat.completions.create({
-        model: "nvidia/nemotron-3-super-120b-a12b",
+        model: "nvidia/nemotron-3.5-super-vl-120b-a12b",
         messages: [
             {
                 role: "system",

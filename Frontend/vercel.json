@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://interview-plan-production.up.railway.app/api/:path*"
+      "destination": "https://interview-plan-aia4.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

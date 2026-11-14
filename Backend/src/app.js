@@ -15,6 +15,16 @@ app.use(cors({
     credentials: true
 }))
 
+// Health Check API
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is awake and running!',
+    timestamp: new Date().toISOString()
+  });
+});
+
+
 
 app.use("/api/auth", authRouter)
 app.use("/api/interview",interviewRouter)
