@@ -20,7 +20,7 @@ const ResetPassword = () => {
 
         setTimeout(() => {
           navigate('/login', { replace: true });
-        }, 2000);
+        }, 1000);
 
       } else {
         toastError(null, "Unable to reset your password. Please try again.");

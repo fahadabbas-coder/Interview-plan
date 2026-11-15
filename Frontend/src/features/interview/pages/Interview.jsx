@@ -140,24 +140,26 @@ const RoadMapDay = ({ day }) => (
 
 const Interview = () => {
     const [active, setActive] = useState('technical')
-    const [downloading, setDownloading] = useState(false)
+    const [pdfStatus, setPdfStatus] = useState('idle') // 'idle' | 'preparing'
     const { report, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
 
     const handleDownload = async () => {
-        if (!interviewId || downloading) return
+        if (!interviewId || pdfStatus === 'preparing') return
 
-        setDownloading(true)
+        setPdfStatus('preparing')
         try {
             await getResumePdf(interviewId)
         } catch (error) {
             toastError(error, "Unable to download the resume.")
         } finally {
-            setDownloading(false)
+            setPdfStatus('idle')
         }
     }
 
-    if (loading && !report) {
+    const reportStatus = loading ? 'loading' : !report ? 'empty' : 'ready'
+
+    if (reportStatus === 'loading') {
         return (
             <Loader
                 title="Loading plan"
@@ -166,7 +168,7 @@ const Interview = () => {
         )
     }
 
-    if (!report) {
+    if (reportStatus === 'empty') {
         return (
             <AppShell
                 leading={<Button to="/" variant="ghost" size="sm">Back</Button>}
@@ -201,9 +203,9 @@ const Interview = () => {
                     variant="secondary"
                     size="sm"
                     onClick={handleDownload}
-                    loading={downloading}
+                    loading={pdfStatus === 'preparing'}
                 >
-                    {downloading ? "Preparing PDF" : "Download resume"}
+                    {pdfStatus === 'preparing' ? "Preparing PDF" : "Download resume"}
                 </Button>
             }
         >

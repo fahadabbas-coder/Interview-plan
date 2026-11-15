@@ -43,7 +43,7 @@ const VerifyOTPforReset = () => {
           <Logo />
           <h1 className="auth-title">Verify OTP</h1>
           <p className="auth-subtitle">
-            We've sent an OTP to <strong>{email}</strong>. Enter it below to verify.
+            Send to <strong>{email}</strong>
           </p>
         </div>
 
@@ -77,7 +77,7 @@ const VerifyOTPforReset = () => {
         </form>
 
         <p className="auth-footnote">
-          Didn't receive the code?{" "}
+          Didn't get it?{" "}
           <button className="text-link" onClick={() => navigate("/forget-password")}>
             Resend OTP
           </button>

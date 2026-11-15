@@ -15,70 +15,49 @@ const VerifyEmail = () => {
     const { email = "" } = location.state || {}
 
     const [otp, setOtp] = useState("")
-    const [submitting, setSubmitting] = useState(false)
-    const [resending, setResending] = useState(false)
-    const [success, setSuccess] = useState(false)
+    const [status, setStatus] = useState('idle') // 'idle' | 'submitting' | 'resending' | 'verified'
     const [countdown, setCountdown] = useState(0)
 
     //  countdown for resend button
     useEffect(() => {
-        if (countdown > 0 && !resending) {
+        if (countdown > 0 && status !== 'resending') {
             const timer = setTimeout(() => {
                 setCountdown(prev => prev - 1)
             }, 1000)
             return () => clearTimeout(timer)
         }
-    }, [countdown, resending])
+    }, [countdown, status])
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        setSubmitting(true)
+        setStatus('submitting')
 
         try {
             const data = await handleVerifyEmail({ email, otp })
             if (data?.user) {
                 toastSuccess(data)
-                setSuccess(true)
-                setTimeout(() => {
-                    navigate("/login")
-                }, 1500)
+                navigate("/login")
             } else {
                 toastError(null, "Invalid OTP. Please try again.")
+                setStatus('idle')
             }
         } catch (error) {
             toastError(error, "Unable to verify email. Please try again.")
-        } finally {
-            setSubmitting(false)
+            setStatus('idle')
         }
     }
 
     const handleResend = async () => {
-        setResending(true)
+        setStatus('resending')
         try {
             const data = await handleReSendOtp({ email })
             toastSuccess(data)
             setCountdown(60)
+            setStatus('idle')
         } catch (error) {
             toastError(error, "Failed to resend OTP. Please try again.")
-        } finally {
-            setResending(false)
+            setStatus('idle')
         }
-    }
-
-    if (success) {
-        return (
-            <main className="auth-page">
-                <div className="auth-card">
-                    <div className="auth-header">
-                        <Logo />
-                        <h1 className="auth-title">Email Verified!</h1>
-                        <p className="auth-subtitle">
-                            Your email has been successfully verified. Redirecting...
-                        </p>
-                    </div>
-                </div>
-            </main>
-        )
     }
 
     return (
@@ -88,7 +67,7 @@ const VerifyEmail = () => {
                     <Logo />
                     <h1 className="auth-title">Verify Email</h1>
                     <p className="auth-subtitle">
-                        We've sent an OTP to <strong>{email}</strong>. Enter it below to verify your account.
+                        Send to <strong>{email}</strong>
                     </p>
                 </div>
 
@@ -113,44 +92,34 @@ const VerifyEmail = () => {
                         <Button
                             type="submit"
                             variant="primary"
-                            loading={submitting}
-                            disabled={!otp || submitting}
+                            loading={status === 'submitting'}
+                            disabled={!otp || status === 'submitting'}
                         >
-                            {submitting ? "Verifying..." : "Verify Email"}
+                            {status === 'submitting' ? "Verifying..." : "Verify Email"}
                         </Button>
-                    </div>
-
-                    <div className="field">
-                        {!resending && countdown > 0 ? (
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleResend}
-                                disabled={countdown > 0}
-                            >
-                                Resend OTP ({countdown}s)
-                            </Button>
-                        ) : (
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleResend}
-                                disabled={resending}
-                            >
-                                {resending ? "Resending..." : "Resend OTP"}
-                            </Button>
-                        )}
                     </div>
                 </form>
 
                 <p className="auth-footnote">
-                    Didn't receive the code?{" "}
-                    {!resending && countdown === 0 ? (
-                        <button className="text-link" onClick={handleResend}>
+                    Didn't get it?{" "}
+                    {status !== 'resending' && countdown === 0 ? (
+                        <button
+                            className="text-link"
+                            onClick={handleResend}
+                            style={{
+                                border: 'none',
+                                boxShadow: 'none',
+                                background: 'transparent',
+                                outline: 'none',
+                                cursor: 'pointer'
+                            }}
+                        >
                             Resend OTP
                         </button>
                     ) : (
-                        <span className="text-link">Please wait...</span>
+                        <span className="text-link" style={{ opacity: 0.7 }}>
+                            {status === 'resending' ? "Resending..." : `Resend in ${countdown}s`}
+                        </span>
                     )}
                 </p>
             </div>

@@ -17,15 +17,15 @@ const Home = () => {
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [resumeFile, setResumeFile] = useState(null)
-    const [submitting, setSubmitting] = useState(false)
+    const [status, setStatus] = useState('idle') // 'idle' | 'generating' | 'success' | 'error'
 
     const reports = Array.isArray(report) ? report : []
     const canGenerate = jobDescription.trim().length > 0 && (Boolean(resumeFile) || selfDescription.trim().length > 0)
 
     const handleGenerate = async () => {
-        if (!canGenerate || submitting) return
+        if (!canGenerate || status === 'generating') return
 
-        setSubmitting(true)
+        setStatus('generating')
         try {
             const response = await generateReport({
                 jobDescription,
@@ -34,14 +34,15 @@ const Home = () => {
             })
             if (response?._id) {
                 toastSuccess("Interview plan generated successfully.")
+                setStatus('success')
                 navigate(`/interview/${response._id}`)
             } else {
                 toastError(null, "Unable to generate your interview plan.")
+                setStatus('idle')
             }
         } catch (error) {
             toastError(error, "Unable to generate your interview plan.")
-        } finally {
-            setSubmitting(false)
+            setStatus('error')
         }
     }
 
@@ -230,10 +231,10 @@ const Home = () => {
                         <Button
                             type="submit"
                             variant="primary"
-                            loading={submitting}
-                            disabled={!canGenerate}
+                            loading={status === 'generating'}
+                            disabled={!canGenerate || status === 'generating'}
                         >
-                            {submitting ? "Generating plan" : "Generate plan"}
+                            {status === 'generating' ? "Generating plan" : "Generate plan"}
                         </Button>
                     </div>
                 </form>

@@ -10,9 +10,6 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await register({ username, email, password })
-            if (data?.user) {
-                setUser(data.user)
-            }
             return data
         } finally {
             setLoading(false)
@@ -23,9 +20,6 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await verifyEmail({ email, otp })
-            if (data?.user) {
-                setUser(data.user)
-            }
             return data
         } finally {
             setLoading(false)
@@ -46,7 +40,7 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await login({ email, password })
-            if (data?.user) {
+            if (data?.user && data.user.verified) {
                 setUser(data.user)
             }
             return data
@@ -59,9 +53,6 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await forgetPassword({ email })
-            if (data?.user) {
-                setUser(data.user)
-            }
             return data
         } finally {
             setLoading(false)
