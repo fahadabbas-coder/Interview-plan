@@ -75,13 +75,6 @@ const VerifyOTPforReset = () => {
             </Button>
           </div>
         </form>
-
-        <p className="auth-footnote">
-          Didn't get it?{" "}
-          <button className="text-link" onClick={() => navigate("/forget-password")}>
-            Resend OTP
-          </button>
-        </p>
       </div>
     </main>
   );

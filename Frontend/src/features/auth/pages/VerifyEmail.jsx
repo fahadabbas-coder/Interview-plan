@@ -39,10 +39,10 @@ const VerifyEmail = () => {
                 navigate("/login")
             } else {
                 toastError(null, "Invalid OTP. Please try again.")
-                setStatus('idle')
             }
         } catch (error) {
             toastError(error, "Unable to verify email. Please try again.")
+        } finally {
             setStatus('idle')
         }
     }

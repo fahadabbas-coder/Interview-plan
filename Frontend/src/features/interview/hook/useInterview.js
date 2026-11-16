@@ -27,7 +27,6 @@ export const useInterview = () => {
     }, [setLoading, setReport])
 
     const getReportById = useCallback(async (id) => {
-        setLoading(true)
         try {
             const response = await getInterviewReportById(id)
             const data = response?.interviewReport ?? null
@@ -36,13 +35,10 @@ export const useInterview = () => {
         } catch (error) {
             toastError(error, "Unable to load this interview plan.")
             return null
-        } finally {
-            setLoading(false)
-        }
-    }, [setLoading, setReport])
+        } 
+    }, [setReport])
 
     const getReport = useCallback(async () => {
-        setLoading(true)
         try {
             const response = await getAllInterviewReports()
             const data = response?.interviewReports ?? []
@@ -51,10 +47,8 @@ export const useInterview = () => {
         } catch (error) {
             toastError(error, "Unable to load interview plans.")
             return []
-        } finally {
-            setLoading(false)
-        }
-    }, [setLoading, setReport])
+        } 
+    }, [setReport])
 
     const getResumePdf = useCallback(async (interviewReportId) => {
         setLoading(true)

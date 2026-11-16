@@ -3,7 +3,6 @@ import { useParams } from 'react-router'
 import { useInterview } from "../hook/useInterview"
 import AppShell from "../../../components/ui/AppShell"
 import Button from "../../../components/ui/Button"
-import Loader from "../../../components/ui/Loader"
 import ScoreMeter from "../../../components/ui/ScoreMeter"
 import { toastError } from "../../../utils/toast"
 import '../style/interview.css'
@@ -158,16 +157,7 @@ const Interview = () => {
     }
 
     const reportStatus = loading ? 'loading' : !report ? 'empty' : 'ready'
-
-    if (reportStatus === 'loading') {
-        return (
-            <Loader
-                title="Loading plan"
-                subtitle="Preparing your interview material"
-            />
-        )
-    }
-
+    
     if (reportStatus === 'empty') {
         return (
             <AppShell

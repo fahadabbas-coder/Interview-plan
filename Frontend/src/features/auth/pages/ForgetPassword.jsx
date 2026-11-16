@@ -7,11 +7,13 @@ import { toastSuccess, toastError } from "../../../utils/toast";
 import "../auth.form.css";
 
 const ForgetPassword = () => {
-  const { handleForgetPassword, loading } = useAuth();
+  const { handleForgetPassword } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true)
     try {
       const res = await handleForgetPassword({ email });
       if (res) {
@@ -55,10 +57,10 @@ const ForgetPassword = () => {
           <Button
             type="submit"
             variant="primary"
-            loading={loading}
+            loading={submitting}
             disabled={!email}
           >
-            {loading ? "Sending code" : "Send reset code"}
+            {submitting ? "Sending code" : "Send reset code"}
           </Button>
         </form>
 

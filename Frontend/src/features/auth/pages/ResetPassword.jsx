@@ -7,12 +7,14 @@ import { toastSuccess, toastError } from "../../../utils/toast";
 import "../auth.form.css";
 
 const ResetPassword = () => {
-  const { handleRestPassword, loading } = useAuth();
+  const { handleRestPassword } = useAuth();
   const navigate = useNavigate()
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true)
     try {
       const res = await handleRestPassword({ newPassword, confirmPassword });
       if (res?.message) {
@@ -27,6 +29,8 @@ const ResetPassword = () => {
       }
     } catch (error) {
       toastError(error, "Unable to reset your password. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -77,10 +81,10 @@ const ResetPassword = () => {
           <Button
             type="submit"
             variant="primary"
-            loading={loading}
+            loading={submitting}
             disabled={!newPassword || !confirmPassword}
           >
-            {loading ? "Resetting password" : "Reset password"}
+            {submitting ? "Resetting password" : "Reset password"}
           </Button>
 
         </form>
