@@ -181,7 +181,13 @@ async function loginUser(req, res) {
                 console.error("Queue failed:", queueErr.message)
             }
 
-            return res.status(403).json({ message: "Please Verify your Email" })
+            return res.status(403).json({
+                message: "Please Verify your Email",
+                user: {
+                    email: user.email,
+                    verified: user.verified
+                }
+            })
         }
 
         const token = jwt.sign({
