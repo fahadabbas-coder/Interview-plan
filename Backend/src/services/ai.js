@@ -4,7 +4,7 @@ const { zodResponseFormat } = require('openai/helpers/zod')
 const puppeteer = require("puppeteer")
 
 const openai = new OpenAI({
-    baseURL: "https://integrate.api.nvidia.com/v1",
+    baseURL: process.env.BASE_URL,
 
     apiKey: process.env.OPENAI_COMPATIBLE_API_KEY
 })
@@ -37,7 +37,7 @@ const interviewReportSchema = z.object({
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
     const completion = await openai.chat.completions.create({
-        model: "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        model: process.env.MODEL,
         messages: [
             {
                 role: "system",
@@ -76,7 +76,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
     The resume should not be so lengthy, it should be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all relevant information that can increase the candidate's chances of getting an interview call for the given job description.
     `
     const completion = await openai.chat.completions.create({
-        model: "nvidia/nemotron-3-super-120b-a12b",
+        model: process.env.MODEL,
         messages: [
             {
                 role: "system",
