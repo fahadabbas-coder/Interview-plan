@@ -1,12 +1,11 @@
 import { useAuth } from "../hooks/useAuth"
 import { Navigate } from "react-router"
-import Loader from "../../../components/ui/Loader"
 
 const Protected = ({ children }) => {
-    const { loading, user } = useAuth()
+    const { loading, checked, user } = useAuth()
 
-    if (loading) {
-        return <Loader title="Checking session" />
+    if (!checked || loading) {
+
     }
 
     if (!user) {

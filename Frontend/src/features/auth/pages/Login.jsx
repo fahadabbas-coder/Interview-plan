@@ -30,7 +30,12 @@ const Login = () => {
                 toastError(null, "Unable to sign in. Check your email and password.")
             }
         } catch (error) {
-            toastError(error, "Unable to sign in. Please try again.")
+            if (error.response?.data?.user?.verified === false) {
+                toastError(null, error.response?.data?.message || "Please verify your email before signing in.")
+                navigate("/verify-email", { state: { email } })
+            } else {
+                toastError(error, "Unable to sign in. Please try again.")
+            }
         } finally {
             setSubmitting(false)
         }

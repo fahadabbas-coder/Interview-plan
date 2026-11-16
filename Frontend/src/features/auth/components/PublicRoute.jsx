@@ -1,12 +1,11 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
-import Loader from "../../../components/ui/Loader";
 
 const PublicRoute = ({ children }) => {
-    const { loading, user } = useAuth();
+    const { loading, checked, user } = useAuth();
 
-    if (loading) {
-        return <Loader title="Checking session" />;
+    if (!checked || loading) {
+
     }
 
     if (user && user.verified) {
