@@ -55,7 +55,9 @@ const VerifyOTPforReset = () => {
               name="otp"
               className="input"
               type="text"
-              autoComplete="otp"
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              pattern="\d{6}"
               required
               value={otp}
               onChange={(e) => setOtp(e.target.value)}

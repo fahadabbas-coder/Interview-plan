@@ -14,8 +14,12 @@ export const AuthProvider = ({ children }) => {
                 if (data?.user) {
                     setUser(data.user)
                 }
-            } catch {
-                // No session cookie user not logged in
+            } catch (error) {
+                const status = error?.response?.status
+
+                if (status && status !== 401 && status !== 403) {
+                    console.error("Auth session check failed:", error.message)
+                }
             } finally {
                 setLoading(false)
                 setChecked(true)

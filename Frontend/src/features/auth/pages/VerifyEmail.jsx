@@ -79,12 +79,14 @@ const VerifyEmail = () => {
                             name="otp"
                             className="input"
                             type="text"
-                            autoComplete="otp"
+                            autoComplete="one-time-code"
+                            inputMode="numeric"
+                            pattern="\d{6}"
                             required
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                             placeholder="Enter 6-digit code"
-                            maxLength="6"
+                            maxLength={6} 
                         />
                     </div>
 

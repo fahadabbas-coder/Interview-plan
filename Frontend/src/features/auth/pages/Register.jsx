@@ -81,6 +81,7 @@ const Register = () => {
                             className="input"
                             type="password"
                             autoComplete="new-password"
+                            minLength={8}
                             required
                             value={password}
                             onChange={(event) => setPassword(event.target.value)}

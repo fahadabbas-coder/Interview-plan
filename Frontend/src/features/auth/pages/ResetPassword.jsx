@@ -54,11 +54,11 @@ const ResetPassword = () => {
               className="input"
               type="password"
               autoComplete="new-password"
+              minLength={8}
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
               placeholder="Create a password"
               required
-              minLength={6}
             />
           </div>
 
@@ -70,11 +70,11 @@ const ResetPassword = () => {
               className="input"
               type="password"
               autoComplete="new-password"
+              minLength={8}
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               placeholder="Enter your password again"
               required
-              minLength={6}
             />
           </div>
 
