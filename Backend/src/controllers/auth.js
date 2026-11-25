@@ -1,4 +1,5 @@
 const userModel = require("../model/user")
+const isProduction = process.env.NODE_ENV === "production" 
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const cookieParser = require("cookie-parser")
@@ -202,8 +203,8 @@ async function loginUser(req, res) {
 
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "lax",
-            secure: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: "/"
         })
@@ -293,8 +294,8 @@ async function verifyOtp(req, res) {
 
         res.cookie("resetToken", resetToken, {
             httpOnly: true,
-            sameSite: "lax",
-            secure: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
             path: "/api/auth/reset-password"
         })
 
@@ -367,8 +368,8 @@ async function logoutUser(req, res) {
 
         res.clearCookie("token", {
             httpOnly: true,
-            sameSite: "lax",
-            secure: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
             path: "/"
         })
 
