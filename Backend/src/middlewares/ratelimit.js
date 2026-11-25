@@ -1,9 +1,14 @@
 const { rateLimit, ipKeyGenerator } = require("express-rate-limit")
 
+const emailKey = (req) => {
+    const email = req.body?.email || req.query?.email
+    return (email || "unknown") + "-" + ipKeyGenerator(req.ip)
+}
+
 const loginLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     limit: 15,
-    keyGenerator: (req) => `${req.body.email}-${ipKeyGenerator(req.ip)}`,
+    keyGenerator: emailKey,
     message: { message: "Too many attempts, Please try again later" }
 })
 
@@ -17,7 +22,7 @@ const verifyEmailLimit = rateLimit({
 const resendOtpLimit = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     limit: 4,
-    keyGenerator: (req) => `${req.query.email}-${ipKeyGenerator(req.ip)}`,
+    keyGenerator: emailKey,
     message: { message: "Too many attempts, Please try again later" }
 })
 
