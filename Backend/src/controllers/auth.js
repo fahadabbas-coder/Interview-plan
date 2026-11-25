@@ -46,6 +46,7 @@ async function registerUser(req, res) {
             await emailQueue.add("verify-email-otp", { email, otp, html })
         } catch (queueErr) {
             console.error("Queue failed:", queueErr.message)
+            return res.status(503).json({ message: "Email service unavailable. Account created but OTP not sent. Try again later." })
         }
 
         res.status(201).json({
@@ -69,7 +70,7 @@ async function verifyEmail(req, res) {
 
         const otpDoc = await otpModel.findOne({ email })
 
-        if (!otpDoc || Date.now() > otpDoc.createdAt.getTime() + 60 * 60 * 1000) {
+        if (!otpDoc || Date.now() > otpDoc.createdAt.getTime() + 10 * 60 * 1000) {
             return res.status(400).json({ message: "Invalid or expired OTP" })
         }
 
@@ -141,6 +142,7 @@ async function resendOtp(req, res) {
             await emailQueue.add("resend-email-otp", { email, otp, html })
         } catch (queueErr) {
             console.error("Queue failed:", queueErr.message)
+            return res.status(503).json({ message: "Email service unavailable. OTP not sent. Try again later." })
         }
 
         res.status(200).json({ message: "OTP sent successfully" })
@@ -157,13 +159,13 @@ async function loginUser(req, res) {
         const user = await userModel.findOne({ email })
 
         if (!user) {
-            return res.status(400).json({ message: "Invaild username or password" })
+            return res.status(400).json({ message: "Invalid username or password" })
         }
 
         const isPasswordVaild = await bcrypt.compare(password, user.password)
 
         if (!isPasswordVaild) {
-            return res.status(400).json({ message: "Invaild username or password" })
+            return res.status(400).json({ message: "Invalid username or password" })
         }
 
         if (!user.verified) {
@@ -179,6 +181,7 @@ async function loginUser(req, res) {
                 await emailQueue.add("verify-email-otp", { email, otp, html })
             } catch (queueErr) {
                 console.error("Queue failed:", queueErr.message)
+                return res.status(503).json({ message: "Email service unavailable. OTP not sent. Try again later." })
             }
 
             return res.status(403).json({
@@ -206,7 +209,7 @@ async function loginUser(req, res) {
         })
 
         res.status(200).json({
-            message: "Login Sccessfully",
+            message: "Login Successfully",
             user: {
                 id: user._id,
                 username: user.username,
@@ -226,7 +229,7 @@ async function forgetPassword(req, res) {
         const user = await userModel.findOne({ email })
 
         if (!user) {
-            return res.status(400).json({ message: "User Invaild" })
+            return res.status(400).json({ message: "User Invalid" })
         }
 
         const recentOtp = await forgetModel.findOne({ user: user._id })
@@ -251,10 +254,11 @@ async function forgetPassword(req, res) {
             await emailQueue.add("forget-email-otp", { email, otp, html })
         } catch (queueErr) {
             console.error("Queue failed:", queueErr.message)
+            return res.status(503).json({ message: "Email service unavailable. OTP not sent. Try again later." })
         }
 
         res.status(200).json({
-            message: "OTP Send Successfully",
+            message: "OTP Sent Successfully",
             user: {
                 email: user.email
             }
@@ -272,7 +276,7 @@ async function verifyOtp(req, res) {
         const otpDoc = await forgetModel.findOne({ email })
 
         if (!otpDoc) {
-            return res.status(400).json({ message: "User Invaild" })
+            return res.status(400).json({ message: "User Invalid" })
         }
 
         const isMatch = await bcrypt.compare(otp, otpDoc.otpHash)
@@ -295,7 +299,7 @@ async function verifyOtp(req, res) {
         })
 
         res.status(200).json({
-            message: "Rest your Password"
+            message: "Reset your Password"
         })
     }
     catch (err) {
@@ -341,10 +345,11 @@ async function resetPassword(req, res) {
             await emailQueue.add("password-changed-successfully-email", { email: user.email, html })
         } catch (queueErr) {
             console.error("Queue failed:", queueErr.message)
+            return res.status(503).json({ message: "Password changed but confirmation email not sent." })
         }
 
         return res.status(200).json({
-            message: 'Password Update Successfully'
+            message: 'Password Updated Successfully'
         });
     } catch (err) {
         console.error(err)
