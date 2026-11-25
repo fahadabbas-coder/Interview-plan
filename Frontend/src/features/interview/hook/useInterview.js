@@ -12,7 +12,7 @@ export const useInterview = () => {
         throw new Error('useInterview must be used within an InterviewProvider')
     }
 
-    const { loading, setLoading, report, setReport } = context
+    const { loading, setLoading, report, setReport, reports, setReports } = context
 
     const generateReport = useCallback(async ({ jobDescription, selfDescription, resumeFile }) => {
         setLoading(true)
@@ -42,13 +42,13 @@ export const useInterview = () => {
         try {
             const response = await getAllInterviewReports()
             const data = response?.interviewReports ?? []
-            setReport(data)
+            setReports(data)
             return data
         } catch (error) {
             toastError(error, "Unable to load interview plans.")
             return []
         } 
-    }, [setReport])
+    }, [setReports])
 
     const getResumePdf = useCallback(async (interviewReportId) => {
         setLoading(true)
@@ -61,6 +61,8 @@ export const useInterview = () => {
             link.setAttribute("download", `resume_${interviewReportId}.pdf`)
             document.body.appendChild(link)
             link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
         } finally {
             setLoading(false)
         }
@@ -74,5 +76,5 @@ export const useInterview = () => {
         }
     }, [interviewId, getReportById, getReport])
 
-    return { loading, report, getReport, generateReport, getReportById, getResumePdf }
+    return { loading, report, reports, getReport, generateReport, getReportById, getResumePdf }
 }

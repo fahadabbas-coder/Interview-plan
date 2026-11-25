@@ -9,7 +9,7 @@ import { toastSuccess, toastError } from '../../../utils/toast'
 import '../style/home.css'
 
 const Home = () => {
-    const { loading, report, generateReport } = useInterview()
+    const { loading, reports, generateReport } = useInterview()
     const { user, handleLogout } = useAuth()
     const navigate = useNavigate()
     const fileInputRef = useRef(null)
@@ -19,8 +19,8 @@ const Home = () => {
     const [resumeFile, setResumeFile] = useState(null)
     const [status, setStatus] = useState('idle') // 'idle' | 'generating' | 'success' | 'error'
 
-    const reports = Array.isArray(report) ? report : []
-    const canGenerate = jobDescription.trim().length > 0 && (Boolean(resumeFile) || selfDescription.trim().length > 0)
+
+    const canGenerate = jobDescription.trim().length > 0 && selfDescription.trim().length > 0 && Boolean(resumeFile)
 
     const handleGenerate = async () => {
         if (!canGenerate || status === 'generating') return
@@ -115,7 +115,7 @@ const Home = () => {
                                 <textarea
                                     id="jobDescription"
                                     className="textarea"
-                                    maxLength={5000}
+                                    maxLength={500}
                                     value={jobDescription}
                                     required
                                     onChange={(event) => setJobDescription(event.target.value)}
@@ -123,7 +123,7 @@ const Home = () => {
                                 />
                                 <div className="field__meta">
                                     <span>Use the exact role text for better questions.</span>
-                                    <span>{jobDescription.length} / 5000</span>
+                                    <span>{jobDescription.length} / 500</span>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +146,7 @@ const Home = () => {
                                     </svg>
                                 </span>
                                 <h3 className="plan-section__title">Your profile</h3>
-                                <Badge tone="info">Recommended</Badge>
+                                <Badge tone="info">Required</Badge>
                             </div>
 
                             <div className="field">
@@ -168,7 +168,11 @@ const Home = () => {
                                         </svg>
                                     </span>
                                     <span className="dropzone__title">Add resume</span>
-                                    <span className="dropzone__subtitle">PDF, max 3MB</span>
+                                    {resumeFile && resumeFile.size > 3 * 1024 * 1024 ? (
+                                        <span id="resume-hint" className="field__error" aria-live="polite">File exceeds 3 MB. Please choose a smaller PDF.</span>
+                                    ) : (
+                                        <span id="resume-hint" style={{ color: "var(--text-muted)", fontSize: "0.8rem", marginTop: "0.35rem" }}>PDF, max 3MB</span>
+                                    )}
                                     {resumeFile ? (
                                         <span className="dropzone__file">{resumeFile.name}</span>
                                     ) : null}
@@ -178,14 +182,9 @@ const Home = () => {
                                         className="visually-hidden"
                                         type="file"
                                         accept=".pdf"
-                                        required
                                         onChange={(event) => setResumeFile(event.target.files?.[0] ?? null)}
                                     />
                                 </label>
-                            </div>
-
-                            <div className="plan-divider" aria-hidden="true">
-                                <span>Or</span>
                             </div>
 
                             <div className="field">
@@ -202,27 +201,6 @@ const Home = () => {
                                 />
                             </div>
 
-                            <div className="note">
-                                <span className="note__icon" aria-hidden="true">
-                                    <svg
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 16v-4" />
-                                        <path d="M12 8h0.01" />
-                                    </svg>
-                                </span>
-                                <p>
-                                    Add a resume or self description so the plan can match your background.
-                                </p>
-                            </div>
                         </div>
                     </div>
 
@@ -266,7 +244,7 @@ const Home = () => {
                                                 {item.title || "Untitled plan"}
                                             </span>
                                             <span className="report-row__meta">
-                                                {new Date(item.createdAt).toLocaleDateString()}
+                                                {(() => { const d = new Date(item.createdAt); return isNaN(d.getTime()) ? "—" : d.toLocaleDateString(); })()}
                                             </span>
                                         </span>
                                         <span className={`report-row__score report-row__score--${tone}`}>
