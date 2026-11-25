@@ -51,9 +51,13 @@ REFRESH_TOKEN=gmail_oauth_refresh_token
 EMAIL_USER=gmail_address_that_sends_mail
 REDIS_URL=your_redis_connection_string_here
 ORIGIN_URL=http://localhost:5173
+PORT=3000
+NODE_ENV=development
 ```
 
 `CLIENT_ID`, `CLIENT_SECRET`, and `REFRESH_TOKEN` are Gmail OAuth2 credentials used only by Nodemailer to send OTP emails. They are not login credentials. `ORIGIN_URL` must match the frontend origin exactly, or CORS will block requests.
+
+`NODE_ENV` controls cookie behavior: `production` sets `sameSite: none` + `secure: true` (required for cross-domain frontend/backend on HTTPS); `development` uses `sameSite: lax` + `secure: false` (localhost). Set `NODE_ENV=production` on the backend platform (Railway or Render) in production.
 
 Run it:
 
@@ -157,7 +161,8 @@ The repo is set up for Vercel (frontend) and Railway (backend), as configured in
 - Build the frontend with `cd Frontend && npm run build` and host `Frontend/dist` anywhere static
 - Run the backend with `node server.js` (no start script yet; a process manager or Railway's Nixpacks will do)
 - Set `ORIGIN_URL` to your deployed frontend origin, including protocol
-- Cookies are `secure: true`, so production must be served over HTTPS or login will silently fail in most browsers
+- Set `NODE_ENV=production` on the backend so cross-site cookies work (Vercel frontend → Railway backend)
+- Cookies are `secure: true` and `sameSite: none` in production, so production must be served over HTTPS or login will silently fail in most browsers
 
 ## Linting
 
