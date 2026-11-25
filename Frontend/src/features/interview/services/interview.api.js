@@ -1,16 +1,30 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: import.meta.env.DEV ? import.meta.env.VITE_ORIGIN_URL : "",
+    baseURL: import.meta.env.VITE_ORIGIN_URL,
     withCredentials: true,
 })
+
+api.interceptors.response.use(
+    (res) => res,
+    (error) => {
+        if (!error.response) {
+            const networkErr = new Error("Unable to reach the Server. Please check your connection and try again.");
+            networkErr.cause = error;
+            return Promise.reject(networkErr)
+        }
+        return Promise.reject(error)
+    }
+)
 
 export const generateInterviewReport = async ({jobDescription, selfDescription, resumeFile}) =>{
 
     const formData = new FormData();
     formData.append("jobDescription", jobDescription);
     formData.append("selfDescription", selfDescription);
-    formData.append("resume", resumeFile);
+    if (resumeFile) {
+        formData.append("resume", resumeFile);
+    }
 
     const response = await api.post("/api/interview", formData, {
         headers: {
