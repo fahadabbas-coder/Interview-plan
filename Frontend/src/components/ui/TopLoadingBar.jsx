@@ -1,10 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 
 const TopLoadingBar = ({ loading }) => {
-    const [progress, setProgress] = useState(0);
-    const [show, setShow] = useState(false);
-    const [duration, setDuration] = useState("0s");
-    const [timing, setTiming] = useState("cubic-bezier(0.4, 0, 0.2, 1)");
+    const [state, setState] = useState({ show: false, progress: 0, duration: "0s", timing: "cubic-bezier(0.4, 0, 0.2, 1)" });
     const trickleRef = useRef(null);
     const timersRef = useRef([]);
     const wasLoadingRef = useRef(false);
@@ -20,21 +17,15 @@ const TopLoadingBar = ({ loading }) => {
 
         if (loading) {
             wasLoadingRef.current = true;
-            setShow(true);
-            setProgress(0);
-            setDuration("0s");
-            setTiming("cubic-bezier(0.4, 0, 0.2, 1)");
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setState({ show: true, progress: 0, duration: "0s", timing: "cubic-bezier(0.4, 0, 0.2, 1)" });
 
             const t0 = setTimeout(() => {
-                setDuration("0.5s");
-                setProgress(80);
+                setState((s) => ({ ...s, duration: "0.5s", progress: 80 }));
 
                 const t1 = setTimeout(() => {
                     trickleRef.current = setInterval(() => {
-                        setProgress((p) => {
-                            if (p >= 95) return p;
-                            return p + 1.5;
-                        });
+                        setState((s) => (s.progress >= 95 ? s : { ...s, progress: s.progress + 1.5 }));
                     }, 200);
                 }, 520);
                 timersRef.current.push(t1);
@@ -42,14 +33,10 @@ const TopLoadingBar = ({ loading }) => {
             timersRef.current.push(t0);
         } else if (wasLoadingRef.current) {
             wasLoadingRef.current = false;
-
-            setTiming("cubic-bezier(0.65, 0, 0.35, 1)");
-            setProgress(100);
+            setState((s) => ({ ...s, timing: "cubic-bezier(0.65, 0, 0.35, 1)", progress: 100 }));
 
             const t2 = setTimeout(() => {
-                setShow(false);
-                setDuration("0s");
-                setProgress(0);
+                setState({ show: false, duration: "0s", progress: 0 });
             }, 600);
             timersRef.current.push(t2);
         }
@@ -57,7 +44,7 @@ const TopLoadingBar = ({ loading }) => {
         return clearAll;
     }, [loading]);
 
-    if (!show) return null;
+    if (!state.show) return null;
 
     return (
         <div
@@ -75,9 +62,9 @@ const TopLoadingBar = ({ loading }) => {
             <div
                 style={{
                     height: "100%",
-                    width: `${progress}%`,
+                    width: `${state.progress}%`,
                     backgroundColor: "#1a73e8",
-                    transition: `width ${duration} ${timing}`,
+                    transition: `width ${state.duration} ${state.timing}`,
                 }}
             />
         </div>
