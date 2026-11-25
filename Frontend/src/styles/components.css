@@ -91,7 +91,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 40px;
+  min-height: 48px;
   padding-inline: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);

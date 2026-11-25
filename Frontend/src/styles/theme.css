@@ -120,6 +120,15 @@ ul {
   outline-offset: 2px;
 }
 
+/* Validation feedback only after the user has interacted with a field */
+:user-invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-border);
+}
+:user-valid {
+  border-color: var(--success);
+}
+
 ::selection {
   background: oklch(79% 0.09 82 / 0.28);
   color: var(--text);
