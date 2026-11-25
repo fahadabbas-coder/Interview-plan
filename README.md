@@ -19,7 +19,7 @@ Full-stack interview prep app. Paste a job description, upload your resume as PD
 
 ### Interview plan
 
-A plan comes from two inputs: your job description (max 500 chars) and either a PDF resume (max 3MB) or a self-description under 150 chars. Feed both to the AI and you get back a match score out of 100, technical and behavioral questions with a model answer and the reasoning behind each one, skill gaps tagged low/medium/high, and a day-by-day preparation roadmap.
+A plan comes from three required inputs: your job description (max 500 chars), a PDF resume (max 3MB), and a self-description under 150 chars. Feed both to the AI and you get back a match score out of 100, technical and behavioral questions with a model answer and the reasoning behind each one, skill gaps tagged low/medium/high, and a day-by-day preparation roadmap.
 
 You can generate 8 plans per 12 hours. Past plans show up on the home page with their scores. Open one and the questions sit in expandable cards, gaps live in a sidebar, and the roadmap runs down the middle. There is a button to have the AI rewrite your resume and hand it back as a PDF. Not magic, but saves an evening of formatting.
 
@@ -61,7 +61,7 @@ Run it:
 npm run dev
 ```
 
-Server starts on `http://localhost:3000`. If the email credentials are wrong it logs an error at boot but keeps running.
+Server starts on `http://localhost:3000`. The process exits if MongoDB cannot connect; email-queue failures return 503 instead of silently failing.
 
 ### Frontend
 
@@ -145,7 +145,7 @@ All four routes require the JWT cookie.
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/` | multipart: `resume` (PDF, optional, max 3MB) + `jobDescription` + `selfDescription`; returns 201 with report; 8 per 12h |
+| POST | `/` | multipart: `resume` (PDF, required, max 3MB) + `jobDescription` (max 500) + `selfDescription` (max 150); returns 201 with report; 8 per 12h |
 | GET | `/:interviewId` | one report (owner only) |
 | GET | `/` | all reports for the user, newest first, large fields stripped |
 | POST | `/resume/pdf/:interviewReportId` | AI writes resume HTML, Puppeteer returns PDF attachment |
