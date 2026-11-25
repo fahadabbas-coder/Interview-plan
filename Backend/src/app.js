@@ -8,6 +8,10 @@ const interviewRouter=require("./routes/interview")
 
 const app = express()
 
+if (!process.env.ORIGIN_URL) {
+    throw new Error("ORIGIN_URL environment variable is required")
+}
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
